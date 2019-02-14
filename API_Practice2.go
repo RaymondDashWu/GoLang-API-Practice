@@ -5,7 +5,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -18,21 +19,26 @@ type norrisJoke struct {
 	} `json:"value"`
 }
 
-func main2() {
+func main() {
 	// Echo instance
 	e := echo.New()
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	resp, _ := http.Get("http://api.icndb.com/jokes/random")
 
-	// Route => handler
 	e.GET("/", func(c echo.Context) error {
-		fmt.Println(json.Marshal(&resp))
-		return nil
-	})
+		resp, err := http.Get("http://api.icndb.com/jokes/random")
+		readResp, err := ioutil.ReadAll(resp.Body)
+		joke := norrisJoke{}
 
+		if err != nil {
+			log.Fatal(err)
+			// Route => handler
+		}
+
+		return json.Unmarshal(readResp, &joke)
+	})
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
 }
