@@ -32,12 +32,13 @@ func main() {
 		readResp, err := ioutil.ReadAll(resp.Body)
 		joke := norrisJoke{}
 
+		json.Unmarshal(readResp, &joke)
+
 		if err != nil {
 			log.Fatal(err)
 			// Route => handler
 		}
-
-		return json.Unmarshal(readResp, &joke)
+		return c.JSON(http.StatusOK, &joke)
 	})
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))

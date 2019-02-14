@@ -5,7 +5,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -33,16 +32,13 @@ func main() {
 		readResp, err := ioutil.ReadAll(resp.Body)
 		joke := norrisJoke{}
 
-		fmt.Println("resp:", resp)
-		fmt.Println("readResp:", readResp)
-		fmt.Println("joke:", joke)
+		json.Unmarshal(readResp, &joke)
 
 		if err != nil {
 			log.Fatal(err)
 			// Route => handler
 		}
-
-		return json.Unmarshal(readResp, &joke)
+		return c.JSON(http.StatusOK, &joke)
 	})
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
